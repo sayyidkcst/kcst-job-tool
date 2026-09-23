@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Business Tools</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --text: #111827;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --blue: #2563eb;
+    --blue-light: #eff6ff;
+    --orange: #f97316;
+    --orange-light: #fff7ed;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Arial, Helvetica, sans-serif;
+    background:
+        radial-gradient(circle at 10% 10%, #eef4ff 0, transparent 28%),
+        radial-gradient(circle at 90% 90%, #fff3e8 0, transparent 28%),
+        #f8fafc;
+    color: var(--text);
+}
+
+/* MAIN CONTAINER */
+.main-box {
+    width: calc(100% - 24px);
+    min-height: calc(100vh - 24px);
+    margin: 12px;
+    background: rgba(255,255,255,0.94);
+    border: 1px solid #d9dee7;
+    border-radius: 18px;
+    box-shadow: 0 12px 40px rgba(15,23,42,0.08);
+    position: relative;
+    overflow: hidden;
+}
+
+/* TOP HEADER */
+.header {
+    height: 105px;
+    padding: 25px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #edf0f4;
+}
+
+/* BRAND */
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+}
+
+.brand-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 15px;
+    background: linear-gradient(135deg, #2563eb, #4f46e5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 0 8px 20px rgba(37,99,235,0.25);
+}
+
+.brand-icon svg {
+    width: 28px;
+    height: 28px;
+}
+
+.brand-text h1 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.brand-text p {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+/* DATE TIME */
+.datetime {
+    text-align: right;
+}
+
+.date {
+    font-size: 14px;
+    font-weight: 700;
+    color: #4b5563;
+}
+
+.time {
+    margin-top: 3px;
+    font-size: 25px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+/* CONTENT */
+.content {
+    max-width: 1050px;
+    margin: auto;
+    padding: 45px 35px 55px;
+}
+
+/* WELCOME */
+.welcome {
+    text-align: center;
+    margin-bottom: 38px;
+}
+
+.welcome h2 {
+    margin: 0;
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.welcome p {
+    margin: 10px 0 0;
+    color: var(--muted);
+    font-size: 15px;
+}
+
+/* MENU GRID */
+.menu {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(250px, 330px));
+    justify-content: center;
+    gap: 28px;
+}
+
+/* MENU CARD */
+.menu-item {
+    position: relative;
+    min-height: 245px;
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    background: white;
+    text-decoration: none;
+    color: var(--text);
+    padding: 28px;
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow: 0 8px 25px rgba(15,23,42,0.06);
+
+    transition:
+        transform .25s ease,
+        box-shadow .25s ease,
+        border-color .25s ease;
+}
+
+.menu-item::before {
+    content: "";
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    top: -75px;
+    right: -65px;
+    opacity: .55;
+}
+
+.salary-card::before {
+    background: #dbeafe;
+}
+
+.packing-card::before {
+    background: #ffedd5;
+}
+
+.menu-item:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 18px 40px rgba(15,23,42,0.12);
+}
+
+.salary-card:hover {
+    border-color: #93c5fd;
+}
+
+.packing-card:hover {
+    border-color: #fdba74;
+}
+
+/* ICON */
+.icon-box {
+    width: 105px;
+    height: 105px;
+    border-radius: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 18px;
+    position: relative;
+    z-index: 1;
+}
+
+.salary-icon {
+    background: var(--blue-light);
+    color: var(--blue);
+}
+
+.packing-icon {
+    background: var(--orange-light);
+    color: var(--orange);
+}
+
+.icon-box svg {
+    width: 58px;
+    height: 58px;
+}
+
+/* TITLE */
+.menu-title {
+    font-size: 23px;
+    font-weight: 800;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+.menu-description {
+    margin-top: 7px;
+    color: var(--muted);
+    font-size: 13px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+/* ARROW */
+.arrow {
+    position: absolute;
+    right: 20px;
+    bottom: 18px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: .7;
+}
+
+.salary-card .arrow {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.packing-card .arrow {
+    background: #fff7ed;
+    color: #ea580c;
+}
+
+.arrow svg {
+    width: 17px;
+    height: 17px;
+}
+
+/* FOOTER */
+.footer {
+    text-align: center;
+    margin-top: 45px;
+    color: #9ca3af;
+    font-size: 12px;
+}
+
+/* MOBILE */
+@media (max-width: 700px) {
+
+    .main-box {
+        width: calc(100% - 12px);
+        min-height: calc(100vh - 12px);
+        margin: 6px;
+        border-radius: 14px;
+    }
+
+    .header {
+        height: auto;
+        padding: 18px;
+        align-items: flex-start;
+    }
+
+    .brand-icon {
+        width: 44px;
+        height: 44px;
+    }
+
+    .brand-text h1 {
+        font-size: 18px;
+    }
+
+    .brand-text p {
+        font-size: 11px;
+    }
+
+    .date {
+        font-size: 11px;
+    }
+
+    .time {
+        font-size: 19px;
+    }
+
+    .content {
+        padding: 35px 18px;
+    }
+
+    .welcome h2 {
+        font-size: 26px;
+    }
+
+    .welcome p {
+        font-size: 13px;
+    }
+
+    .menu {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .menu-item {
+        min-height: 220px;
+        width: 100%;
+        max-width: 360px;
+        margin: auto;
+    }
+}
+
+/* SMALL MOBILE */
+@media (max-width: 430px) {
+
+    .header {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .datetime {
+        text-align: left;
+        width: 100%;
+    }
+
+    .content {
+        padding-top: 28px;
+    }
+
+    .welcome {
+        margin-bottom: 28px;
+    }
+
+    .welcome h2 {
+        font-size: 23px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="main-box">
+
+    <!-- HEADER -->
+    <header class="header">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+
+                <!-- Dashboard Icon -->
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <rect x="3" y="3" width="7" height="7"
+                          rx="1"></rect>
+
+                    <rect x="14" y="3" width="7" height="7"
+                          rx="1"></rect>
+
+                    <rect x="3" y="14" width="7" height="7"
+                          rx="1"></rect>
+
+                    <rect x="14" y="14" width="7" height="7"
+                          rx="1"></rect>
+
+                </svg>
+
+            </div>
+
+            <div class="brand-text">
+                <h1>SAYYID SHEREEF KC</h1>
+                <p>Software Developer, Accountant</p>
+            </div>
+
+        </div>
+
+
+        <!-- DATE TIME -->
+        <div class="datetime">
+
+            <div class="date" id="date"></div>
+
+            <div class="time" id="time"></div>
+
+        </div>
+
+    </header>
+
+
+    <!-- CONTENT -->
+    <main class="content">
+
+        <div class="welcome">
+
+            <h2>KEMKA FOOD PARK LLP</h2>
+
+            <p>
+                96 333 151 77
+            </p>
+
+        </div>
+
+
+        <!-- MENU -->
+        <div class="menu">
+
+
+            <!-- STAFF SALARY -->
+            <a href="https://sayyidkcst.github.io/staff-salary/"
+               class="menu-item salary-card">
+
+                <div class="icon-box salary-icon">
+
+                    <!-- Salary / Staff Icon -->
+                    <svg viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="1.8"
+                         stroke-linecap="round"
+                         stroke-linejoin="round">
+
+                        <!-- Person -->
+                        <circle cx="9" cy="7" r="3"></circle>
+
+                        <path d="M3.5 19
+                                 C3.5 15.5 5.7 13 9 13
+                                 C11 13 12.7 14 13.7 15.5"></path>
+
+                        <!-- Money Circle -->
+                        <circle cx="17" cy="15" r="4.5"></circle>
+
+                        <path d="M17 12.8
+                                 V17.2"></path>
+
+                        <path d="M18.5 14
+                                 C18.2 13.2 17.5 12.8 16.8 12.8
+                                 C15.8 12.8 15.2 13.3 15.2 14
+                                 C15.2 15.5 18.7 14.8 18.7 16.2
+                                 C18.7 17 18 17.4 17.1 17.4
+                                 C16.2 17.4 15.5 17 15.2 16.3"></path>
+
+                    </svg>
+
+                </div>
+
+                <div class="menu-title">
+                    Staff Salary
+                </div>
+
+                <div class="menu-description">
+                    Salary, attendance & payroll
+                </div>
+
+                <div class="arrow">
+
+                    <svg viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="2"
+                         stroke-linecap="round"
+                         stroke-linejoin="round">
+
+                        <path d="M5 12h14"></path>
+                        <path d="m13 6 6 6-6 6"></path>
+
+                    </svg>
+
+                </div>
+
+            </a>
+
+
+            <!-- PACKING CALCULATOR -->
+            <a href="https://sayyidkcst.github.io/packing-calc/"
+               class="menu-item packing-card">
+
+                <div class="icon-box packing-icon">
+
+                    <!-- Factory Icon -->
+                    <svg viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="1.8"
+                         stroke-linecap="round"
+                         stroke-linejoin="round">
+
+                        <path d="M3 21V10
+                                 L9 13V10
+                                 L15 13V8
+                                 L21 11V21"></path>
+
+                        <path d="M3 21h18"></path>
+
+                        <path d="M7 17h2"></path>
+
+                        <path d="M12 17h2"></path>
+
+                        <path d="M17 17h2"></path>
+
+                        <path d="M7 21v-4"></path>
+
+                        <path d="M12 21v-4"></path>
+
+                        <path d="M17 21v-4"></path>
+
+                        <path d="M9 7V3h3v6"></path>
+
+                    </svg>
+
+                </div>
+
+                <div class="menu-title">
+                    Packing Calculator
+                </div>
+
+                <div class="menu-description">
+                    Packing, quantity & weight
+                </div>
+
+                <div class="arrow">
+
+                    <svg viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="2"
+                         stroke-linecap="round"
+                         stroke-linejoin="round">
+
+                        <path d="M5 12h14"></path>
+                        <path d="m13 6 6 6-6 6"></path>
+
+                    </svg>
+
+                </div>
+
+            </a>
+
+        </div>
+
+
+        <div class="footer">
+            Business Management System - KCST Media Technology
+        </div>
+
+    </main>
+
+</div>
+
+
+<script>
+
+/* ================================
+   LIVE DATE & TIME
+================================ */
+
+function updateDateTime() {
+
+    const now = new Date();
+
+    const days = [
+        "Sun",
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat"
+    ];
+
+    const day = days[now.getDay()];
+
+    const date =
+        String(now.getDate()).padStart(2, "0");
+
+    const month =
+        String(now.getMonth() + 1).padStart(2, "0");
+
+    const year =
+        now.getFullYear();
+
+    let hours = now.getHours();
+
+    const minutes =
+        String(now.getMinutes()).padStart(2, "0");
+
+    const seconds =
+        String(now.getSeconds()).padStart(2, "0");
+
+    const ampm =
+        hours >= 12 ? "PM" : "AM";
+
+    hours = hours % 12;
+
+    hours = hours ? hours : 12;
+
+    hours =
+        String(hours).padStart(2, "0");
+
+    document.getElementById("date").textContent =
+        `${day} ${date}-${month}-${year}`;
+
+    document.getElementById("time").textContent =
+        `${hours}:${minutes}:${seconds} ${ampm}`;
+}
+
+
+/* START CLOCK */
+updateDateTime();
+
+setInterval(updateDateTime, 1000);
+
+</script>
+
+</body>
+</html>
