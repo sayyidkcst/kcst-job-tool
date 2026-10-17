@@ -20,6 +20,12 @@
       --orange-light: #fff7ed;
       --indigo: #4f46e5;
       --indigo-light: #eef2ff;
+      --teal: #0d9488;
+      --teal-light: #f0fdfa;
+      --rose: #e11d48;
+      --rose-light: #fff1f2;
+      --slate: #475569;
+      --slate-light: #f1f5f9;
     }
 
     body {
@@ -195,6 +201,18 @@
       background: #e0e7ff;
     }
 
+    .fas-card::before {
+      background: #ccfbf1;
+    }
+
+    .bus-card::before {
+      background: #ffe4e6;
+    }
+
+    .settings-card::before {
+      background: #e2e8f0;
+    }
+
     .menu-item:hover {
       transform: translateY(-8px);
       box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
@@ -210,6 +228,18 @@
 
     .finance-card:hover {
       border-color: #a5b4fc;
+    }
+
+    .fas-card:hover {
+      border-color: #5eead4;
+    }
+
+    .bus-card:hover {
+      border-color: #fda4af;
+    }
+
+    .settings-card:hover {
+      border-color: #94a3b8;
     }
 
     /* ICON BOX */
@@ -239,6 +269,21 @@
     .finance-icon {
       background: var(--indigo-light);
       color: var(--indigo);
+    }
+
+    .fas-icon {
+      background: var(--teal-light);
+      color: var(--teal);
+    }
+
+    .bus-icon {
+      background: var(--rose-light);
+      color: var(--rose);
+    }
+
+    .settings-icon {
+      background: var(--slate-light);
+      color: var(--slate);
     }
 
     .icon-box svg {
@@ -299,6 +344,21 @@
       color: #4f46e5;
     }
 
+    .fas-card .arrow {
+      background: #f0fdfa;
+      color: #0d9488;
+    }
+
+    .bus-card .arrow {
+      background: #fff1f2;
+      color: #e11d48;
+    }
+
+    .settings-card .arrow {
+      background: #f1f5f9;
+      color: #475569;
+    }
+
     .arrow svg {
       width: 17px;
       height: 17px;
@@ -318,7 +378,7 @@
       .menu {
         grid-template-columns: repeat(2, minmax(200px, 1fr));
       }
-      .finance-card {
+      .menu-item:nth-child(odd):last-child {
         grid-column: span 2;
         max-width: 380px;
         justify-self: center;
@@ -372,7 +432,7 @@
         grid-template-columns: 1fr;
         gap: 18px;
       }
-      .finance-card {
+      .menu-item:nth-child(odd):last-child {
         grid-column: auto;
         max-width: 360px;
       }
@@ -438,19 +498,41 @@
 
       <!-- MENU: three cards -->
       <div class="menu">
-        <!-- STAFF SALARY -->
-        <a href="https://sayyidkcst.github.io/staff-salary/" class="menu-item salary-card">
-          <div class="icon-box salary-icon">
+        <!-- FAS -->
+        <a href="https://erp.rowbest.in/admin/dashboard" class="menu-item fas-card">
+          <div class="icon-box fas-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="9" cy="7" r="3"></circle>
-              <path d="M3.5 19 C3.5 15.5 5.7 13 9 13 C11 13 12.7 14 13.7 15.5"></path>
-              <circle cx="17" cy="15" r="4.5"></circle>
-              <path d="M17 12.8 V17.2"></path>
-              <path d="M18.5 14 C18.2 13.2 17.5 12.8 16.8 12.8 C15.8 12.8 15.2 13.3 15.2 14 C15.2 15.5 18.7 14.8 18.7 16.2 C18.7 17 18 17.4 17.1 17.4 C16.2 17.4 15.5 17 15.2 16.3"></path>
+              <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path>
+              <path d="M14 3v5h5"></path>
+              <path d="M9 13h6"></path>
+              <path d="M9 17h4"></path>
             </svg>
           </div>
-          <div class="menu-title">Staff Salary</div>
-          <div class="menu-description">Salary, attendance & payroll</div>
+          <div class="menu-title">FAS</div>
+          <div class="menu-description">Fixed assets & accounts</div>
+          <div class="arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14"></path>
+              <path d="m13 6 6 6-6 6"></path>
+            </svg>
+          </div>
+        </a>
+
+        <!-- MY BUS -->
+        <a href="https://erp.rowbest.in/admin/order-dashboard" class="menu-item bus-card">
+          <div class="icon-box bus-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="4" y="3" width="16" height="14" rx="2"></rect>
+              <path d="M4 11h16"></path>
+              <path d="M8 7h8"></path>
+              <circle cx="8" cy="14" r="0.6"></circle>
+              <circle cx="16" cy="14" r="0.6"></circle>
+              <path d="M6 17v3"></path>
+              <path d="M18 17v3"></path>
+            </svg>
+          </div>
+          <div class="menu-title">My Bus</div>
+          <div class="menu-description">Trips, routes & bookings</div>
           <div class="arrow">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M5 12h14"></path>
@@ -474,8 +556,29 @@
               <path d="M9 7V3h3v6"></path>
             </svg>
           </div>
-          <div class="menu-title">KCST Windows</div>
+          <div class="menu-title">Retro Desk</div>
           <div class="menu-description">Packing, quantity & weight</div>
+          <div class="arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14"></path>
+              <path d="m13 6 6 6-6 6"></path>
+            </svg>
+          </div>
+        </a>
+
+        <!-- STAFF SALARY -->
+        <a href="https://sayyidkcst.github.io/staff-salary/" class="menu-item salary-card">
+          <div class="icon-box salary-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="9" cy="7" r="3"></circle>
+              <path d="M3.5 19 C3.5 15.5 5.7 13 9 13 C11 13 12.7 14 13.7 15.5"></path>
+              <circle cx="17" cy="15" r="4.5"></circle>
+              <path d="M17 12.8 V17.2"></path>
+              <path d="M18.5 14 C18.2 13.2 17.5 12.8 16.8 12.8 C15.8 12.8 15.2 13.3 15.2 14 C15.2 15.5 18.7 14.8 18.7 16.2 C18.7 17 18 17.4 17.1 17.4 C16.2 17.4 15.5 17 15.2 16.3"></path>
+            </svg>
+          </div>
+          <div class="menu-title">Staff Salary</div>
+          <div class="menu-description">Salary, attendance & payroll</div>
           <div class="arrow">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M5 12h14"></path>
@@ -504,6 +607,24 @@
           </div>
           <div class="menu-title">Blue Light Finance</div>
           <div class="menu-description">Cash flow, budget & ledger</div>
+          <div class="arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14"></path>
+              <path d="m13 6 6 6-6 6"></path>
+            </svg>
+          </div>
+        </a>
+
+        <!-- SETTINGS -->
+        <a href="#" class="menu-item settings-card">
+          <div class="icon-box settings-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+          </div>
+          <div class="menu-title">Settings</div>
+          <div class="menu-description">Preferences & configuration</div>
           <div class="arrow">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M5 12h14"></path>
