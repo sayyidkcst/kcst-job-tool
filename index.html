@@ -446,6 +446,10 @@
     .btn.primary { background: var(--blue); border-color: var(--blue); color: #fff; }
     .btn.danger { color: #dc2626; }
     .foot-right { display: flex; gap: 10px; }
+    .set-status { padding: 0 22px 10px; font-size: 12px; min-height: 22px; color: var(--muted); }
+    .set-status.err { color: #dc2626; }
+    .set-status.ok { color: #16a34a; }
+    .btn:disabled { opacity: 0.6; cursor: default; }
 
     /* MOBILE */
     @media (max-width: 900px) {
@@ -750,6 +754,7 @@
         <button class="modal-x" id="settingsClose" aria-label="Close">&times;</button>
       </div>
       <div class="modal-body" id="settingsList"></div>
+      <div class="set-status" id="settingsStatus"></div>
       <div class="modal-foot">
         <button class="btn danger" id="settingsReset">Reset to default</button>
         <div class="foot-right">
@@ -808,6 +813,31 @@
         try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {}
       }
 
+      // ----- Supabase (database) -----
+      const SB_URL = "https://rrtpnknbrrcwzmlqeyha.supabase.co";
+      const SB_KEY = "sb_publishable_S8YKuWueI4Bs3IKXaYSNzg_pH5wCyYC";
+      const SB_TABLE = SB_URL + "/rest/v1/jobportal_settings";
+      const ROW_ID = "launcher";
+
+      async function dbLoad() {
+        const r = await fetch(SB_TABLE + "?id=eq." + ROW_ID + "&select=value", { headers: { apikey: SB_KEY } });
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        const rows = await r.json();
+        return rows.length ? rows[0].value : null;
+      }
+      async function dbSave(st) {
+        const r = await fetch(SB_TABLE + "?on_conflict=id", {
+          method: "POST",
+          headers: {
+            apikey: SB_KEY,
+            "Content-Type": "application/json",
+            Prefer: "resolution=merge-duplicates,return=minimal"
+          },
+          body: JSON.stringify({ id: ROW_ID, value: st, updated_at: new Date().toISOString() })
+        });
+        if (!r.ok) throw new Error("HTTP " + r.status);
+      }
+
       function apply(st) {
         st.order.forEach(function (id) {
           const a = cards[id];
@@ -858,7 +888,7 @@
         render();
       });
 
-      function open() { draft = load(); render(); modal.classList.add("open"); }
+      function open() { draft = load(); render(); setStatus(""); modal.classList.add("open"); }
       function close() { modal.classList.remove("open"); }
 
       settingsCard.addEventListener("click", function (e) { e.preventDefault(); open(); });
@@ -867,17 +897,38 @@
       modal.addEventListener("click", function (e) { if (e.target === modal) close(); });
       document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
 
-      document.getElementById("settingsSave").addEventListener("click", function () {
-        const st = normalize(draft);
-        save(st); apply(st); close();
+      const statusEl = document.getElementById("settingsStatus");
+      const saveBtn = document.getElementById("settingsSave");
+      function setStatus(msg, cls) { statusEl.textContent = msg || ""; statusEl.className = "set-status " + (cls || ""); }
+
+      async function commit(st, doneMsg) {
+        save(st); apply(st);                       // always keep a local copy
+        saveBtn.disabled = true; setStatus("Saving to database…");
+        try {
+          await dbSave(st);
+          setStatus(doneMsg, "ok");
+          return true;
+        } catch (e) {
+          setStatus("Saved on this device only – database error (" + e.message + ")", "err");
+          return false;
+        } finally { saveBtn.disabled = false; }
+      }
+
+      saveBtn.addEventListener("click", async function () {
+        const ok = await commit(normalize(draft), "Saved to database");
+        if (ok) setTimeout(close, 500);
       });
-      document.getElementById("settingsReset").addEventListener("click", function () {
+      document.getElementById("settingsReset").addEventListener("click", async function () {
         if (!confirm("Reset names, links and order to default?")) return;
-        try { localStorage.removeItem(KEY); } catch (e) {}
-        apply(clone(defaults)); draft = clone(defaults); render();
+        draft = clone(defaults); render();
+        await commit(clone(defaults), "Reset and saved to database");
       });
 
+      // show cached copy instantly, then refresh from the database
       apply(load());
+      dbLoad().then(function (v) {
+        if (v) { const st = normalize(v); apply(st); save(st); }
+      }).catch(function () { /* offline or table missing: keep local copy */ });
     })();
   </script>
 </body>
