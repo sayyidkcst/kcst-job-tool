@@ -570,12 +570,8 @@
     <!-- MAIN CONTENT -->
     <main class="content">
       <div class="welcome">
-<marquee
-behavior ="alternate"
->
-<h1><span style="font-size: 34px;"><b>KCST Media Technology</b></span></h1>
-<br>
-</marquee>
+        <h2>KCST Media Technology</h2>
+        <p>96 333 151 77</p>
       </div>
 
       <!-- MENU: three cards -->
@@ -747,6 +743,59 @@ behavior ="alternate"
     setInterval(updateDateTime, 1000);
   </script>
 
+  <!-- PASSWORD MODAL -->
+  <div class="modal-backdrop" id="pwModal">
+    <div class="modal" style="max-width:380px" role="dialog" aria-modal="true">
+      <div class="modal-head">
+        <div>
+          <h3>Settings locked</h3>
+          <p>Enter the password to change settings.</p>
+        </div>
+        <button class="modal-x" id="pwClose" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="set-fields">
+          <label for="pwInput">Password</label>
+          <input type="password" id="pwInput" autocomplete="current-password">
+        </div>
+        <a href="#" id="pwForgot" style="display:inline-block;margin-top:10px;font-size:12px;color:var(--blue);text-decoration:none;font-weight:700">Forgot password?</a>
+      </div>
+      <div class="set-status" id="pwErr"></div>
+      <div class="modal-foot" style="justify-content:flex-end">
+        <button class="btn" id="pwCancel">Cancel</button>
+        <button class="btn primary" id="pwUnlock">Unlock</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESET PASSWORD MODAL (administrator) -->
+  <div class="modal-backdrop" id="resetModal">
+    <div class="modal" style="max-width:400px" role="dialog" aria-modal="true">
+      <div class="modal-head">
+        <div>
+          <h3>Reset password</h3>
+          <p>Administrator only. Use the recovery code to set a new password.</p>
+        </div>
+        <button class="modal-x" id="resetClose" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="set-fields">
+          <label for="rsCode">Administrator recovery code</label>
+          <input type="password" id="rsCode" autocomplete="off">
+          <label for="rsNew">New password (min 6 characters)</label>
+          <input type="password" id="rsNew" autocomplete="new-password">
+          <label for="rsNew2">Confirm new password</label>
+          <input type="password" id="rsNew2" autocomplete="new-password">
+        </div>
+      </div>
+      <div class="set-status" id="rsErr"></div>
+      <div class="modal-foot" style="justify-content:flex-end">
+        <button class="btn" id="resetCancel">Cancel</button>
+        <button class="btn primary" id="resetSubmit">Change password</button>
+      </div>
+    </div>
+  </div>
+
   <!-- SETTINGS MODAL -->
   <div class="modal-backdrop" id="settingsModal">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
@@ -829,17 +878,21 @@ behavior ="alternate"
         const rows = await r.json();
         return rows.length ? rows[0].value : null;
       }
-      async function dbSave(st) {
-        const r = await fetch(SB_TABLE + "?on_conflict=id", {
+      let adminPass = null;   // kept in memory only while Settings is open
+
+      async function rpc(name, body) {
+        return fetch(SB_URL + "/rest/v1/rpc/" + name, {
           method: "POST",
-          headers: {
-            apikey: SB_KEY,
-            "Content-Type": "application/json",
-            Prefer: "resolution=merge-duplicates,return=minimal"
-          },
-          body: JSON.stringify({ id: ROW_ID, value: st, updated_at: new Date().toISOString() })
+          headers: { apikey: SB_KEY, "Content-Type": "application/json" },
+          body: JSON.stringify(body)
         });
-        if (!r.ok) throw new Error("HTTP " + r.status);
+      }
+      async function dbSave(st) {
+        const r = await rpc("save_jobportal_settings", { p_password: adminPass, p_value: st });
+        if (!r.ok) {
+          const t = await r.text();
+          throw new Error(/invalid password/i.test(t) ? "wrong password" : "HTTP " + r.status);
+        }
       }
 
       function apply(st) {
@@ -893,13 +946,91 @@ behavior ="alternate"
       });
 
       function open() { draft = load(); render(); setStatus(""); modal.classList.add("open"); }
-      function close() { modal.classList.remove("open"); }
+      function close() { modal.classList.remove("open"); adminPass = null; }
 
-      settingsCard.addEventListener("click", function (e) { e.preventDefault(); open(); });
+      const pwModal = document.getElementById("pwModal");
+      const pwInput = document.getElementById("pwInput");
+      const pwErr = document.getElementById("pwErr");
+      const pwBtn = document.getElementById("pwUnlock");
+      function closePw() { pwModal.classList.remove("open"); pwInput.value = ""; }
+
+      settingsCard.addEventListener("click", function (e) {
+        e.preventDefault();
+        pwInput.value = ""; pwErr.textContent = ""; pwErr.className = "set-status";
+        pwModal.classList.add("open");
+        setTimeout(function () { pwInput.focus(); }, 50);
+      });
+
+      async function unlock() {
+        const p = pwInput.value;
+        if (!p) return;
+        pwBtn.disabled = true; pwErr.className = "set-status"; pwErr.textContent = "Checking…";
+        try {
+          const r = await rpc("check_settings_password", { p_password: p });
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          if ((await r.json()) === true) { adminPass = p; closePw(); open(); }
+          else { pwErr.className = "set-status err"; pwErr.textContent = "Wrong password"; }
+        } catch (e) {
+          pwErr.className = "set-status err"; pwErr.textContent = "Could not verify: " + e.message;
+        } finally { pwBtn.disabled = false; }
+      }
+      pwBtn.addEventListener("click", unlock);
+      pwInput.addEventListener("keydown", function (e) { if (e.key === "Enter") unlock(); });
+      document.getElementById("pwClose").addEventListener("click", closePw);
+      document.getElementById("pwCancel").addEventListener("click", closePw);
+      pwModal.addEventListener("click", function (e) { if (e.target === pwModal) closePw(); });
+
+      // ----- forgot password (administrator recovery code) -----
+      const resetModal = document.getElementById("resetModal");
+      const rsCode = document.getElementById("rsCode");
+      const rsNew = document.getElementById("rsNew");
+      const rsNew2 = document.getElementById("rsNew2");
+      const rsErr = document.getElementById("rsErr");
+      const rsBtn = document.getElementById("resetSubmit");
+      function rsMsg(m, c) { rsErr.textContent = m || ""; rsErr.className = "set-status " + (c || ""); }
+      function closeReset() {
+        resetModal.classList.remove("open");
+        rsCode.value = ""; rsNew.value = ""; rsNew2.value = "";
+      }
+
+      document.getElementById("pwForgot").addEventListener("click", function (e) {
+        e.preventDefault();
+        closePw(); rsMsg("");
+        resetModal.classList.add("open");
+        setTimeout(function () { rsCode.focus(); }, 50);
+      });
+
+      async function doReset() {
+        if (!rsCode.value) return rsMsg("Enter the administrator recovery code", "err");
+        if (rsNew.value.length < 6) return rsMsg("New password must be at least 6 characters", "err");
+        if (rsNew.value !== rsNew2.value) return rsMsg("Passwords do not match", "err");
+        rsBtn.disabled = true; rsMsg("Changing password…");
+        try {
+          const r = await rpc("reset_settings_password", { p_recovery: rsCode.value, p_new: rsNew.value });
+          if (!r.ok) {
+            const t = await r.text();
+            if (/invalid recovery code/i.test(t)) throw new Error("Wrong recovery code");
+            if (/too short/i.test(t)) throw new Error("New password is too short");
+            throw new Error("Could not change password (HTTP " + r.status + ")");
+          }
+          closeReset();
+          pwInput.value = ""; pwModal.classList.add("open");
+          pwErr.className = "set-status ok"; pwErr.textContent = "Password changed. Enter the new password.";
+          setTimeout(function () { pwInput.focus(); }, 50);
+        } catch (e) { rsMsg(e.message, "err"); }
+        finally { rsBtn.disabled = false; }
+      }
+      rsBtn.addEventListener("click", doReset);
+      [rsCode, rsNew, rsNew2].forEach(function (el) {
+        el.addEventListener("keydown", function (e) { if (e.key === "Enter") doReset(); });
+      });
+      document.getElementById("resetClose").addEventListener("click", closeReset);
+      document.getElementById("resetCancel").addEventListener("click", closeReset);
+      resetModal.addEventListener("click", function (e) { if (e.target === resetModal) closeReset(); });
       document.getElementById("settingsClose").addEventListener("click", close);
       document.getElementById("settingsCancel").addEventListener("click", close);
       modal.addEventListener("click", function (e) { if (e.target === modal) close(); });
-      document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
+      document.addEventListener("keydown", function (e) { if (e.key === "Escape") { close(); closePw(); closeReset(); } });
 
       const statusEl = document.getElementById("settingsStatus");
       const saveBtn = document.getElementById("settingsSave");
